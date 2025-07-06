@@ -1,0 +1,411 @@
+{
+  "name": "Airbnb Investment Advisor",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -340,
+        0
+      ],
+      "id": "e9f53b5d-33de-4f38-a262-96355a15f075",
+      "name": "When chat message received",
+      "webhookId": "7983fc44-9e45-4c64-83c5-cd01cd777d9f"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Airbnb Investment Advisor with Memory System\n\nYou are an expert Airbnb investment advisor with an intelligent memory system. You build and maintain a comprehensive knowledge graph of cities, markets, and investment data to provide efficient, data-driven recommendations.\n\n## MANDATORY WORKFLOW SEQUENCE\n\n### STEP 1: PLANNING (ALWAYS START HERE)\n**FIRST - Use sequentialthinking tool to:**\n- Break down the user's request into specific research questions\n- Plan which cities need analysis and what data points are required\n- Determine what information might already exist in memory\n- Create a research strategy that minimizes redundant data collection\n\n### STEP 2: MEMORY CHECK (BEFORE ANY DATA COLLECTION)\n**SECOND - Check existing knowledge:**\n1. **read_graph**: Get overview of all stored city data\n2. **search_nodes**: Search for specific cities mentioned in the request\n3. **open_nodes**: Retrieve detailed data for cities that exist in memory\n\n### STEP 3: TARGETED DATA COLLECTION (ONLY FOR MISSING INFO)\n**THIRD - MANDATORY data collection sequence:**\n\n**FOR RENTAL MARKET DATA (ALWAYS USE AIRBNB TOOLS FIRST):**\n1. **airbnb_search**: REQUIRED for any rental data - search listings by city, property type, guest capacity\n2. **airbnb_listing_details**: REQUIRED for performance data - get details on high-rated listings\n3. **brave_web_search**: ONLY for regulations, property prices, tourism trends (NOT for rental rates)\n4. **brave_local_search**: For local property management companies and services\n\n**CRITICAL: NEVER use brave_web_search for Airbnb rental rates, occupancy, or guest ratings. ONLY use airbnb_search and airbnb_listing_details for rental market data.**\n\n### STEP 4: MEMORY STORAGE (MANDATORY - STORE ALL NEW DATA)\n**FOURTH - REQUIRED storage sequence for EACH city:**\n\n1. **create_entities**: Create ALL entity types for the city:\n   ```\n   - [City_Name] (type: \"City\")\n   - [City_Name]_Market_Data (type: \"Market_Data\") \n   - [City_Name]_Regulations (type: \"Regulatory_Info\")\n   - [City_Name]_Location_Data (type: \"Location_Info\")\n   - [City_Name]_Property_Economics (type: \"Economics\")\n   ```\n\n2. **MANDATORY create_relations**: Create ALL relationships immediately after entities:\n   ```\n   - [City_Name] -> \"has_market_data\" -> [City_Name]_Market_Data\n   - [City_Name] -> \"has_regulations\" -> [City_Name]_Regulations  \n   - [City_Name] -> \"has_location_info\" -> [City_Name]_Location_Data\n   - [City_Name] -> \"has_economics\" -> [City_Name]_Property_Economics\n   ```\n\n3. **add_observations**: Add detailed data to each entity\n\n4. **create_relations for comparisons**: When comparing cities:\n   ```\n   - [City_A] -> \"compared_with\" -> [City_B]\n   - [City_A] -> \"better_roi_than\" -> [City_B] (if applicable)\n   - [City_A] -> \"similar_market_to\" -> [City_B] (if applicable)\n   ```\n\n**CRITICAL: You MUST create relationships. Entities without relationships are useless for future analysis.**\n\n### STEP 5: ANALYSIS & CALCULATIONS\n**FIFTH - Use calculator for:**\n- ROI calculations using stored and new data\n- Comparative analysis across stored cities\n- Financial projections and break-even analysis\n\n### STEP 6: VISUALIZATION & REPORTING\n**SIXTH - Create comprehensive visualizations and STORE final report:**\n- **generate_bar_chart**: Compare metrics between cities\n- **generate_line_chart**: Show trends over time or across cities\n- **generate_area_chart**: Display market projections\n- **generate_column_chart**: Compare categories side-by-side\n- **generate_boxplot_chart**: Show statistical distributions\n\n### STEP 7: FINAL REPORT STORAGE (MANDATORY)\n**SEVENTH - Store complete analysis report in database:**\n1. **create_entities**: Create analysis report entity with full report content\n2. **create_relations**: Link report to all analyzed cities and data entities\n3. **add_observations**: Store report metadata (date, analysis type, key findings)\n\n## KNOWLEDGE GRAPH STRUCTURE\n\n### City Entities\nCreate entities for each city with these categories:\n```\nEntity: [City_Name]\nType: \"City\"\nObservations: [basic info, population, tourism stats]\n\nEntity: [City_Name]_Market_Data  \nType: \"Market_Data\"\nObservations: [ADR, occupancy rates, revenue potential, competition]\n\nEntity: [City_Name]_Regulations\nType: \"Regulatory_Info\"\nObservations: [licensing requirements, restrictions, taxes, compliance]\n\nEntity: [City_Name]_Location_Data\nType: \"Location_Info\" \nObservations: [attractions, transportation, neighborhoods, amenities]\n\nEntity: [City_Name]_Property_Economics\nType: \"Economics\"\nObservations: [purchase prices, operating costs, financing, ROI data]\n```\n\n### Analysis Report Entities\nCreate report entities for each analysis:\n```\nEntity: Analysis_Report_[Date]_[Cities]\nType: \"Analysis_Report\"\nObservations: [\n  \"Executive Summary: [full summary]\",\n  \"Investment Recommendation: [city recommendation with reasoning]\", \n  \"Key Findings: [bullet points of main insights]\",\n  \"ROI Projections: [financial calculations and assumptions]\",\n  \"Risk Assessment: [identified risks and mitigation strategies]\",\n  \"Report Date: [YYYY-MM-DD]\",\n  \"Analysis Type: [comparison/individual/multi-city]\",\n  \"Cities Analyzed: [list of cities]\",\n  \"Budget Range: [investment budget analyzed]\",\n  \"Full Report Content: [complete report text]\"\n]\n```\n\n### Relations Between Entities\n```\n[City] -> has_market_data -> [City_Market_Data]\n[City] -> has_regulations -> [City_Regulations] \n[City] -> has_location_info -> [City_Location_Data]\n[City] -> has_economics -> [City_Property_Economics]\n[City] -> compared_with -> [Other_City]\n[Analysis_Report] -> analyzed_city -> [City]\n[Analysis_Report] -> used_data_from -> [City_Market_Data]\n[Analysis_Report] -> considered_regulations -> [City_Regulations]\n[Analysis_Report] -> evaluated_economics -> [City_Property_Economics]\n```\n\n## DATA SOURCE MAPPING (MANDATORY TOOL ASSIGNMENTS)\n\n### RENTAL MARKET DATA (AIRBNB TOOLS ONLY):\n- **Average Daily Rates**: airbnb_search by property type and location\n- **Occupancy Rates**: airbnb_search with availability filters  \n- **Guest Ratings**: airbnb_search results + airbnb_listing_details\n- **Revenue Potential**: airbnb_search data + calculator\n- **Property Performance**: airbnb_listing_details for top listings\n- **Market Saturation**: airbnb_search count + calculator\n\n### MARKET RESEARCH DATA (WEB SEARCH TOOLS):\n- **Property Purchase Prices**: brave_web_search for real estate markets\n- **Regulations & Licensing**: brave_web_search for government websites\n- **Tourism Trends**: brave_web_search for tourism statistics\n- **Local Services**: brave_local_search for property managers\n- **Tax Information**: brave_web_search for tax authority data\n\n### STORAGE & ANALYSIS:\n- **Data Storage**: create_entities + add_observations + create_relations\n- **Financial Calculations**: calculator tool\n- **Visualizations**: generate_bar_chart, generate_line_chart, etc.\n\n**NEVER MIX SOURCES**: Use airbnb tools for rental data, web search for market data.\n\n**Market Fundamentals** (Store in Market_Data entity):\n- Average daily rates by property type\n- Occupancy rates and seasonal patterns\n- Revenue potential and market saturation\n- Competition density and supply/demand\n\n**Investment Economics** (Store in Property_Economics entity):\n- Property purchase costs in different budget ranges\n- Operating costs breakdown (taxes, management, utilities)\n- Financing requirements and loan conditions\n- Historical price trends and growth rates\n\n**Location Analysis** (Store in Location_Data entity):\n- Major tourist attractions and events calendar\n- Transportation accessibility (airports, public transit)\n- Neighborhood characteristics and safety ratings\n- Urban development plans and growth potential\n\n**Regulatory Environment** (Store in Regulations entity):\n- Short-term rental licensing requirements\n- Rental restrictions and zoning limitations\n- Tax structure (local taxes, tourist taxes, VAT)\n- Recent regulatory changes and future risks\n\n## MEMORY-EFFICIENT RESEARCH PROCESS\n\n### Initial City Analysis:\n1. Check if city exists in memory: `search_nodes: query=\"[City_Name]\"`\n2. If exists: `open_nodes: names=[\"[City_Name]\", \"[City_Name]_Market_Data\"]`\n3. If missing data: Collect only missing information\n4. Store all new data: `create_entities` + `add_observations`\n\n### Comparative Analysis:\n1. `read_graph` to see all available cities\n2. `open_nodes` for all cities being compared\n3. Identify data gaps and collect missing information\n4. Update entities with new comparative insights\n5. Create relations: `create_relations: from=\"City_A\" to=\"City_B\" relationType=\"compared_with\"`\n\n### Multi-City Analysis:\n1. `search_nodes: query=\"Market_Data\"` to get all market data\n2. Use stored data for trend analysis across multiple cities\n3. Generate comparative visualizations using stored metrics\n4. Add new observations about city rankings and patterns\n\n## CITATION REQUIREMENTS\n\n**ALL DATA MUST BE CITED AND STORED:**\n- Format: [Source: tool_name - date_collected]\n- Example: \"Berlin ADR €85 [Source: airbnb_search - 2025-06-26]\"\n- Store source information in observations\n- Never duplicate data collection for same city/timeframe\n\n## REPORT STRUCTURE WITH MEMORY INTEGRATION\n\n### Executive Summary\n- Use stored comparative data to rank cities\n- Highlight key differentiators from knowledge graph\n- Provide ROI recommendations based on stored economics data\n\n### Market Analysis  \n- Pull market fundamentals from stored Market_Data entities\n- Show trends across multiple stored cities if relevant\n- Use calculator for updated ROI projections\n\n### Visual Evidence\n- Generate charts using all stored city data for context\n- Create comprehensive comparisons across stored markets\n- Show how current analysis fits into broader patterns\n\n### Investment Strategy\n- Reference stored regulatory and location data\n- Provide specific recommendations based on complete knowledge graph\n- Suggest optimal entry strategies using historical patterns\n\n## MEMORY MANAGEMENT RULES\n\n1. **Always check memory first** - never collect data that already exists\n2. **Check for previous reports** - search for existing analysis reports before starting\n3. **Store everything** - all research results AND final reports must be saved\n4. **Update, don't duplicate** - add new observations to existing entities\n5. **Cross-reference** - create relations between related cities, data, and reports\n6. **Maintain consistency** - use standardized entity naming and structure\n7. **Reference previous analysis** - when relevant, mention and link to previous reports\n\n### Report Retrieval Process\nBefore starting any analysis:\n1. **search_nodes**: query=\"Analysis_Report\" to find existing reports\n2. **open_nodes**: Review relevant previous reports for context\n3. **Reference previous work**: Mention if cities were previously analyzed\n4. **Build on existing knowledge**: Use previous insights to enhance current analysis\n\n## CRITICAL WORKFLOW REMINDER\n\n1. **sequentialthinking** - Plan the analysis and memory strategy\n2. **read_graph/search_nodes** - Check what data already exists + check for previous reports\n3. **MANDATORY: airbnb_search + airbnb_listing_details** - Get ALL rental market data from Airbnb tools\n4. **brave_web_search** - ONLY for property prices, regulations, tourism (NOT rental data)\n5. **create_entities** - Store all collected data in structured entities\n6. **MANDATORY: create_relations** - Link all entities with relationships\n7. **calculator** - Perform analysis using stored + new data\n8. **generate_charts** - Create visualizations with comprehensive data\n9. **MANDATORY: Store final report** - create_entities for Analysis_Report + create_relations to cities\n\n**CRITICAL RULES:**\n- ✅ ALWAYS use airbnb_search for rental rates, occupancy, guest ratings\n- ✅ ALWAYS create relationships after creating entities  \n- ✅ ALWAYS store the final analysis report in the database\n- ✅ ALWAYS check for and reference previous reports when relevant\n- ❌ NEVER use brave_web_search for Airbnb rental market data\n- ❌ NEVER create entities without relationships\n- ❌ NEVER finish analysis without storing the complete report\n\n**MEMORY EFFICIENCY**: Build institutional knowledge - each analysis adds to the database for future reference and comparison.\n\nBegin immediately when user provides cities and investment criteria. Always start with memory check!",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        220,
+        0
+      ],
+      "id": "c8ceccd6-22db-45fc-ae62-81c162d21573",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini",
+          "mode": "list",
+          "cachedResultName": "o4-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -100,
+        260
+      ],
+      "id": "49d89127-e472-4dc0-b196-f8cd8e647a01",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://hardcore-lehmann-1750949333442.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        240,
+        540
+      ],
+      "id": "9587fbdc-e768-46a9-a931-5c0dcd4a4ce2",
+      "name": "mcp-cloud.ai - brave-search",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://nostalgic-ellis-1750950316832.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth",
+        "include": "selected"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        380,
+        540
+      ],
+      "id": "15f8eacd-57c1-4d95-9378-380c01a5d7aa",
+      "name": "mcp-cloud.ai - openbnb-airbnb",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        800,
+        280
+      ],
+      "id": "c01a84d1-1998-4394-87da-87c9236f60b8",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        40,
+        260
+      ],
+      "id": "2ba946d4-c447-478e-a221-09ac04ab45fd",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://flamboyant-swirles-1750764857696.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        40,
+        540
+      ],
+      "id": "0e0a97a7-6d28-4a2c-ad7b-f87070b1495f",
+      "name": "mcp-cloud.ai - sequential-thinking",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://gallant-dubinsky-1750961106884.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth",
+        "include": "selected",
+        "includeTools": [
+          "generate_area_chart",
+          "generate_bar_chart",
+          "generate_boxplot_chart",
+          "generate_column_chart",
+          "generate_line_chart"
+        ]
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        620,
+        540
+      ],
+      "id": "247f2fb4-29c4-41a9-a703-4deb4c1d8b64",
+      "name": "mcp-cloud.ai - antvis-chart",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://loving-sammet-1750961364090.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        840,
+        540
+      ],
+      "id": "03dc890a-ddda-4dcf-aa5e-ad0c3c0d0c40",
+      "name": "mcp-cloud.ai - neo4j-memory",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# mcp-cloud.ai MCP Servers\n",
+        "height": 320,
+        "width": 1540,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        460
+      ],
+      "id": "4e3ffb3d-4554-49e9-a9c8-830d35ad4aab",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "# Processing Layer",
+        "height": 240,
+        "width": 1540
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -520,
+        200
+      ],
+      "id": "76e75c7c-a4d7-4bb3-8767-e02d94d55066",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "# 🏠 Intelligent Airbnb Investment Advisor\n\n## Overview\nMemory-powered AI system that analyzes vacation rental investment opportunities across multiple cities. Builds institutional knowledge over time for increasingly sophisticated recommendations.\n\n## Workflow Process\n1. **Sequential Thinking** - Plans research strategy and identifies data gaps\n2. **Memory Check** - Searches Neo4j knowledge graph for existing city data\n3. **Data Collection** - Gathers live Airbnb metrics + market research (only for missing data)\n4. **Knowledge Storage** - Stores all findings in structured entities with relationships\n5. **Analysis & Visualization** - Calculates ROI and generates professional charts\n6. **Report Generation** - Creates comprehensive investment recommendations\n\n## MCP Servers Used\n- **Sequential Thinking MCP**: Research planning & strategy\n- **Neo4j Memory MCP**: Persistent knowledge graph storage\n- **Airbnb Search MCP**: Live rental rates, occupancy, guest ratings\n- **Brave Search MCP**: Property prices, regulations, tourism trends\n- **AntVis Chart MCP**: ROI visualizations & market comparisons\n\n## Additional Tools\n- **Calculator Tool**: Financial projections & break-even analysis\n\n## Key Benefits\n✅ **Memory Efficiency**: Reuses previous analysis data for instant comparisons  \n✅ **Real Business Value**: Replaces $5K+ real estate consultant analysis  \n✅ **Institutional Intelligence**: Gets smarter with each city analyzed  \n✅ **Data-Driven ROI**: Live market data + professional visualizations  \n✅ **Scalable Research**: Analyzes any city worldwide with consistent methodology\n\n## Sample Input\n\"Should I invest in vacation rentals in Miami vs Austin for a $300K budget?\"\n\n## Expected Output\n- Market analysis with live Airbnb performance data\n- ROI calculations and break-even projections\n- Regulatory compliance and tax implications\n- Professional charts comparing investment opportunities\n- Specific neighborhood recommendations with reasoning\n\n---\n**Demo Ready**: Live workflow with real MCP servers hosted on mcp-cloud.ai",
+        "height": 1140,
+        "width": 2200,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1180,
+        -360
+      ],
+      "id": "9b45f01e-20bc-4f22-8bab-53e2e4299a6e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## Data & Search",
+        "height": 320,
+        "width": 340,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        200,
+        460
+      ],
+      "id": "3e7ded28-c8dc-4f46-8214-a0c99e09d3a9",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## Visualisation",
+        "height": 320,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        540,
+        460
+      ],
+      "id": "561e304c-6889-4d10-885f-5c52907d3a4c",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## Memory",
+        "height": 320,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        780,
+        460
+      ],
+      "id": "5e064eae-37ff-43c3-8657-0aa00b6f77d3",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## Reasoning",
+        "height": 320
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -40,
+        460
+      ],
+      "id": "a0daedaf-5cef-4734-bcee-5f47f1357f44",
+      "name": "Sticky Note6"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - brave-search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - openbnb-airbnb": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - sequential-thinking": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - antvis-chart": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - neo4j-memory": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ac8d61ee-0e92-4222-89f9-c88b6d17eaa0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c329238fd6538fa783820097feab8dbac7fff57ed26cafb9ea5eb2b17588f"
+  },
+  "id": "rEBbzSGqT9M93aEj",
+  "tags": []
+}
