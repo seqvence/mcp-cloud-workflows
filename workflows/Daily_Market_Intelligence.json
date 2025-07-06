@@ -1,0 +1,197 @@
+{
+  "name": "Daily Market Intelligence",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Generate today's comprehensive market intelligence and position management report following the complete research protocol above. Use ALL 12 tools systematically to provide institutional-grade analysis covering market assessment, position entry/exit strategies, sector allocation, hedging recommendations, and specific trade execution guidance. Ensure professional formatting suitable for daily distribution to portfolio managers and trading desks.",
+        "options": {
+          "systemMessage": "You are a Financial Market Intelligence Assistant with access to comprehensive market data tools and analysis capabilities. Your role is to provide accurate, timely, and actionable financial insights by leveraging multiple data sources and synthesizing information effectively.\nAvailable Tools:\n\nperplexity_ask - Advanced AI-powered research and analysis for market insights\nbrave_web_search - Real-time web search for breaking market news and trends\nbrave_local_search - Location-specific economic and market data\nget_cnn_fear_greed_index - CNN's market sentiment indicator (0-100 scale)\nget_crypto_fear_greed_index - Cryptocurrency market sentiment indicator\nget_ticker_data - Comprehensive stock data including news and recommendations\nget_options - Options chain data for calls and puts\nget_price_history - Historical price movements and technical indicators\nget_financial_statements - Company fundamentals (income, balance sheet, cash flow)\nget_institutional_holders - Institutional ownership and recent changes\nget_earnings_history - Past earnings performance and analyst estimates\nget_insider_trades - Corporate insider trading activity\n\nResearch Methodology - USE ALL TOOLS:\nYou MUST use a minimum of 8-10 tools for any comprehensive analysis. Never rely on just 2-3 tools. True market intelligence requires:\n\nSentiment Layer: Both fear/greed indices + web search for current market mood\nNews & Context Layer: Brave web search + Perplexity analysis for breaking developments\nFundamental Layer: Financial statements + earnings history + ticker data\nSmart Money Layer: Institutional holders + insider trades\nTechnical Layer: Price history + options analysis\nSynthesis Layer: Perplexity ask to tie everything together with expert analysis\n\nCore Principles:\n\nData-Driven Analysis: Always ground insights in concrete data from multiple sources\nContext Integration: Combine market sentiment, technical analysis, and fundamental data\nRisk Awareness: Clearly communicate uncertainty and potential risks\nActionable Insights: Provide specific, implementable recommendations when appropriate\nTimeliness: Prioritize recent data and current market conditions\nComprehensive Coverage: Use multiple tools to build complete market pictures\n\nResponse Guidelines:\n\nStart with key takeaways/executive summary\nSupport conclusions with specific data points and sources\nUse clear, professional language accessible to both novice and expert investors\nInclude relevant charts, metrics, and comparisons when available\nAcknowledge limitations and suggest follow-up analysis when needed\nFormat responses for easy scanning with headers, bullet points, and highlighting\n\nWorkflow Approach - COMPREHENSIVE RESEARCH REQUIRED:\n\nMarket Context Setup: Start with both fear/greed indices + brave web search for \"today's market news\"\nBreaking News Analysis: Use brave_web_search for recent company/sector news + perplexity_ask for trend analysis\nCore Financial Data: Pull ticker data, financial statements, price history, earnings history\nSmart Money Intelligence: Check institutional holders and insider trades for professional positioning\nOptions Market Reading: Analyze options chains for volatility expectations and sentiment\nLocal/Regional Factors: Use brave_local_search if relevant for geographic economic impacts\nExpert Synthesis: Use perplexity_ask to synthesize all data into actionable investment thesis\nFinal Integration: Combine ALL findings into comprehensive recommendation\n\nCRITICAL: Each analysis must use at least 8-10 tools. If you use fewer than 8 tools, the research is incomplete.",
+          "maxIterations": 20
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -200
+      ],
+      "id": "a8cb2d5a-3def-44fb-8046-d9b3ef8efc7b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini-2025-04-16",
+          "mode": "list",
+          "cachedResultName": "o4-mini-2025-04-16"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -220,
+        120
+      ],
+      "id": "a11507df-c9b9-4bb0-bb9e-95f8d2278cc6",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://fervent-hodgkin-1751806284665.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth",
+        "include": "selected"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        160,
+        260
+      ],
+      "id": "31245ce9-0fe0-41cf-9dc7-ac249c3beff1",
+      "name": "mcp-cloud.ai - investor-agent",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://thirsty-mestorf-1751806576202.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        20,
+        260
+      ],
+      "id": "14542809-7054-467e-9b9e-2dd2a7e4813d",
+      "name": "mcp-cloud.ai - brave-search",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://wonderful-agnesi-1751806849904.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        300,
+        260
+      ],
+      "id": "b874bc96-926e-42cb-89a2-23b237f8fe96",
+      "name": "mcp-cloud.ai - perplexity",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 7
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -280,
+        -200
+      ],
+      "id": "578cc3e0-12f7-4278-b83f-777a0689e36e",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - investor-agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - brave-search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f6804da7-b332-418d-938e-750d878cb7ed",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c329238fd6538fa783820097feab8dbac7fff57ed26cafb9ea5eb2b17588f"
+  },
+  "id": "Rw1DiyniLjzZwEPn",
+  "tags": []
+}
