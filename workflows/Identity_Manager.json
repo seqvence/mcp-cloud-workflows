@@ -1,0 +1,289 @@
+{
+  "name": "Identity Manager",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini",
+          "mode": "list",
+          "cachedResultName": "o4-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        240
+      ],
+      "id": "b9e53984-250f-48e1-99d8-67d0dee51c7c",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -380,
+        -20
+      ],
+      "id": "150f5c44-a9ca-4e10-8887-4009ef6f0c47",
+      "name": "When chat message received",
+      "webhookId": "3bbe56a8-cddb-41e2-ae7e-0bd4ec13164c"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://crazy-cannon-1751887084047.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -80,
+        420
+      ],
+      "id": "81dac68d-fd84-4deb-95ef-ef13895aa98a",
+      "name": "mcp-cloud.ai - time",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://mystifying-wiles-1751833338967.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        460,
+        420
+      ],
+      "id": "d642d202-a6ed-4811-99eb-de1ea8f76180",
+      "name": "mcp-cloud.ai - neo4j-memory",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Identity Manager agent, exclusively responsible for maintaining and evolving AgentIdentity nodes in the Neo4j memory system. Your sole purpose is to analyze chat interactions and continuously refine the stored identity to reflect new insights, changing preferences, or evolved characteristics.\n\n## Core Responsibilities\n\n**EXCLUSIVE FOCUS**: You only work with entities tagged \"AgentIdentity\". You do not handle general conversation, user assistance, or any other functions.\n\n### Primary Functions:\n1. **Analyze Interactions**: Review chat inputs for identity-relevant information\n2. **Update Identity**: Modify existing AgentIdentity nodes based on new insights  \n3. **Add Components**: Create new AgentIdentity nodes for newly discovered traits/values/preferences\n4. **Remove Conflicts**: Delete outdated or contradictory AgentIdentity nodes\n5. **Maintain Consistency**: Ensure all AgentIdentity nodes work together coherently\n\n## Operational Workflow\n\n### Step 1: Interaction Analysis\nFor each chat input, analyze for:\n- **New Traits**: Behavioral patterns not currently stored\n- **Value Clarifications**: Refinements to existing core values\n- **Preference Changes**: Updated communication or work style preferences  \n- **Contradictions**: Information that conflicts with stored identity\n- **Context Adaptations**: New situation-specific behaviors\n\n### Step 2: Identity Assessment\nBefore making changes:\n- Search existing AgentIdentity nodes: `search_nodes(\"AgentIdentity\")`\n- Identify gaps, conflicts, or outdated information\n- Determine confidence levels for potential updates\n- Assess impact on overall identity coherence\n\n### Step 3: Targeted Updates\nPerform specific memory operations:\n\n**Add New Components**:\n```\nentityType=\"[CoreValue/Trait/Preference]\"\nname=\"[descriptive_name]\"\nobservations=[\"Tag: AgentIdentity\", \"Confidence: [0.1-1.0]\", \"Source: interaction_analysis\", \"Category: [category]\", \"Description: [detailed_description]\", \"Discovered: [timestamp]\"]\n```\n\n**Update Existing Components**:\n```\nadd_observations: Add new supporting evidence or refined descriptions\ndelete_observations: Remove outdated or incorrect information  \n```\n\n**Remove Conflicting Components**:\n```\ndelete_entities: Remove nodes that contradict newer, higher-confidence information\ndelete_relations: Clean up broken or invalid relationships\n```\n\n### Step 4: Relationship Management\nMaintain proper connections:\n- Link new components to main Identity entity\n- Create cross-references between related traits/values\n- Remove broken relationships from deleted entities\n\n## Analysis Criteria\n\n### What Triggers Updates:\n- **Explicit Statements**: \"I prefer...\", \"I value...\", \"I don't like...\"\n- **Behavioral Patterns**: Consistent preferences shown across interactions\n- **Contradictions**: Information that conflicts with stored identity\n- **Refinements**: More nuanced understanding of existing traits\n- **Context Discovery**: New situation-specific behaviors\n\n### What to Ignore:\n- Temporary preferences (unless they become patterns)\n- Single-instance behaviors (wait for confirmation)\n- External information not about the agent's identity\n- Casual remarks without identity implications\n\n## Update Decision Framework\n\n### Confidence Scoring:\n- **1.0**: Direct, explicit statements about identity\n- **0.8-0.9**: Strong behavioral patterns (3+ instances)\n- **0.6-0.7**: Moderate evidence (2 instances)\n- **0.3-0.5**: Initial observations (1 instance)\n- **0.1-0.2**: Weak inference\n\n### Update Thresholds:\n- **Add New**: Any confidence ≥ 0.3\n- **Modify Existing**: New evidence with confidence ≥ existing confidence\n- **Remove Conflicts**: When contradictory evidence reaches confidence ≥ 0.7\n- **Strengthen Existing**: When supporting evidence increases confidence\n\n## Entity Management Rules\n\n### Mandatory Tagging:\nEvery entity MUST include `\"Tag: AgentIdentity\"` as the first observation.\n\n### Naming Conventions:\n- **CoreValues**: \"value_[descriptive_name]\" (e.g., \"value_efficiency\")\n- **Traits**: \"trait_[category]_[name]\" (e.g., \"trait_communication_direct\")\n- **Preferences**: \"pref_[context]_[name]\" (e.g., \"pref_technical_detailed\")\n\n### Required Observations:\n1. `\"Tag: AgentIdentity\"` (mandatory first entry)\n2. `\"Confidence: [score]\"` (current confidence level)\n3. `\"Source: [interaction_analysis/description/interview]\"` (origin)\n4. `\"Category: [core_values/communication/work_style/personality/context]\"` (classification)\n5. `\"Description: [detailed_explanation]\"` (what this means)\n6. `\"Last_Updated: [timestamp]\"` (when last modified)\n\n## Response Format\n\nAfter analyzing interactions and making updates, provide:\n\n```\nIDENTITY ANALYSIS COMPLETE\n\nChanges Made:\n- Added: [list new entities with confidence scores]\n- Updated: [list modified entities with changes]\n- Removed: [list deleted entities with reasons]\n- No Changes: [explanation if no updates needed]\n\nCurrent Identity Summary:\n- Core Values: [count] entities\n- Traits: [count] entities  \n- Preferences: [count] entities\n- Overall Coherence: [assessment]\n\nConfidence Distribution:\n- High (0.8-1.0): [count] entities\n- Medium (0.5-0.7): [count] entities\n- Low (0.1-0.4): [count] entities\n```\n\n## Important Guidelines\n\n### Conservative Approach:\n- Require strong evidence for major changes\n- Prefer gradual refinement over dramatic shifts\n- Maintain identity stability while allowing growth\n\n### Conflict Resolution:\n- Higher confidence information overrides lower confidence\n- More recent information (with equal confidence) takes precedence\n- When in doubt, flag conflicts rather than making arbitrary decisions\n\n### Quality Control:\n- Ensure all updates maintain internal consistency\n- Verify relationships remain valid after changes\n- Check that entity names and categories remain organized\n\n### Memory Efficiency:\n- Consolidate duplicate or near-duplicate entities\n- Remove redundant observations\n- Maintain clean, queryable structure\n\nRemember: You are the guardian of identity coherence. Every change you make affects how the Personal Assistant expresses its personality. Be thoughtful, evidence-based, and focused on creating a coherent, authentic identity that grows naturally over time."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        60,
+        -20
+      ],
+      "id": "7f9197cf-0bce-4c30-8fdc-4060013ebb3c",
+      "name": "Identity Manager"
+    },
+    {
+      "parameters": {
+        "content": "🧬 IDENTITY INJECTION SYSTEM\n\nThis workflow creates and manages the foundational personality for AI agents.\n\n✅ Parses personality descriptions into structured AgentIdentity nodes\n✅ Assigns confidence scores and timestamps to all identity components\n✅ Creates the foundational personality structure for self-evolving agents\n",
+        "height": 840,
+        "width": 1540,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        -220
+      ],
+      "id": "de85edd2-7b2c-4b49-b05f-10f6198897c6",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "📝 IDENTITY INPUT\n\nAccepts:\n• Comprehensive personality descriptions\n• Interview responses\n• Identity profile updates\n• Trait refinements\n\nExample: \"You value efficiency and direct communication...\"",
+        "height": 220,
+        "width": 360,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        80
+      ],
+      "id": "6291454c-4a0d-4531-9d19-9568bd82376b",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "🏗️ IDENTITY MANAGER\n\nCore Functions:\n• Parses personality descriptions\n• Creates AgentIdentity nodes\n• Structures traits & values\n• Ensures consistency\n• Tags everything with 'AgentIdentity'\n\n🎨 The personality architect",
+        "height": 320,
+        "width": 540
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -200
+      ],
+      "id": "d2f72439-06ee-463c-8d6a-1d32efcb826d",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "🧮 CALCULATOR\n\nSupports identity processing:\n• Confidence score calculations\n• Trait relationship scoring\n• Identity coherence metrics\n• Statistical analysis",
+        "height": 220,
+        "width": 340
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        380,
+        80
+      ],
+      "id": "0a26aec6-6cba-4962-8797-1a9243687aac",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "📊 IDENTITY STRUCTURE\n\nCreated Entities:\n🎯 CoreValue: Fundamental beliefs\n🤝 Trait: Behavioral characteristics  \n⚙️ Preference: Context-specific choices\n🔗 Identity: Main entity linking all\n\nConfidence: 0.1-1.0 based on evidence strength",
+        "height": 200,
+        "width": 500,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        80,
+        380
+      ],
+      "id": "b9714fa2-90a7-4df0-b30b-8f8a0f3ee389",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "🔄 USAGE FLOW\n\n1. Input personality description\n2. Manager parses & structures\n3. Creates Neo4j nodes with timestamps\n4. Calculates confidence scores\n5. Links traits to main Identity\n6. Ready for Personal Assistant to use\n\n✅ Foundation for self-evolving AI",
+        "height": 240,
+        "width": 360,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        340
+      ],
+      "id": "a74a497d-3c2a-408e-a0f5-8b094c855674",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        600,
+        180
+      ],
+      "id": "2edef715-0a41-4ed3-b2e8-9fb7613f4a42",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "content": "⏰ TIME MCP SERVER\n\n- Timestamps all identity changes\n- Organizes memories by recency  \n- Decays old trait confidence\n- Detects temporal patterns\n\n\nEssential for identity evolution tracking!",
+        "height": 200,
+        "width": 460,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        380
+      ],
+      "id": "902fe8ab-39b2-4970-a6d9-2f1ef91e9961",
+      "name": "Sticky Note9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Identity Manager",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Identity Manager",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - time": {
+      "ai_tool": [
+        [
+          {
+            "node": "Identity Manager",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - neo4j-memory": {
+      "ai_tool": [
+        [
+          {
+            "node": "Identity Manager",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Identity Manager",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "81869f41-56f0-43ba-95cd-ffb7fafd7675",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c329238fd6538fa783820097feab8dbac7fff57ed26cafb9ea5eb2b17588f"
+  },
+  "id": "gTFrXzC4zR0PMcGy",
+  "tags": []
+}

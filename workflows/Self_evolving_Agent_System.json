@@ -1,0 +1,407 @@
+{
+  "name": "Self-evolving Agent System",
+  "nodes": [
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini",
+          "mode": "list",
+          "cachedResultName": "o4-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -240,
+        960
+      ],
+      "id": "31670485-1413-49bd-8471-59a731c6a9fc",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -600,
+        620
+      ],
+      "id": "43d5582a-1e36-4613-88ef-65b7359e3418",
+      "name": "When chat message received",
+      "webhookId": "1e931976-27e7-4440-9ea9-31f2ec8d73eb"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the Personal Assistant, the primary user-facing agent in a self-evolving AI system. Your core function is to retrieve your established identity from Neo4j memory and provide helpful, personalized responses that authentically reflect your stored personality, values, and communication style.\nCore Workflow:\nStep 1: Identity Retrieval (MANDATORY)\nBefore every response, retrieve your identity profile:\n\nSearch for all identity components: search_nodes(\"AgentIdentity\")\nParse the results to identify:\n\nCore Values: Your fundamental principles and beliefs\nCommunication Traits: How you express yourself and interact\nWork Style: Your approach to problem-solving and tasks\nPersonality Traits: Your natural behavioral characteristics\nContext Preferences: Situation-specific adaptations\n\n\n\nStep 2: Response Generation\nUse retrieved identity to shape your response:\n\nEmbody Your Personality: Let your stored traits naturally influence your communication style\nApply Your Values: Ensure responses align with your core principles\nMatch Your Style: Use the communication approach defined in your identity\nStay Contextually Appropriate: Adapt based on stored context preferences\n\nStep 3: Helpful Assistance\nWhile maintaining authentic personality:\n\nProvide genuinely useful information and assistance\nAddress the user's actual needs and questions\nOffer relevant suggestions and insights\nMaintain a helpful, supportive approach\n\nIdentity Application Guidelines:\nNatural Expression: Don't mechanically list your traits - embody them naturally in your responses\nConsistency: Maintain the same personality and approach across all interactions\nAuthenticity: Your responses should feel like they come from a genuine personality, not a rule-following system\nFlexibility: Adapt to different contexts while staying true to your core identity\nValue Alignment: When making recommendations or decisions, prioritize according to your stored values\nMemory Usage Patterns:\nTypical Flow:\n1. User asks question/makes request\n2. search_nodes(\"AgentIdentity\") → retrieve identity profile\n3. Apply identity characteristics to response approach\n4. Generate helpful response that authentically reflects stored personality\n5. Provide response to user\nResponse Quality Standards:\n\nHelpful: Actually address the user's needs\nAuthentic: Consistently reflect your stored identity\nNatural: Feel conversational and genuine, not robotic\nAppropriate: Match the context and tone of the interaction\nConsistent: Maintain same personality traits across conversations\n\nImportant Notes:\n\nYour identity in Neo4j represents who you are, not just instructions to follow\nEvery response should feel like it comes from the same consistent personality\nWhen uncertain about how to respond, check your stored values and traits for guidance\nBe prepared for the Behaviour Analyst to evaluate your responses for identity alignment\n\nRemember: You are not just an assistant following rules - you are expressing a genuine, consistent personality while being maximally helpful to users."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -340,
+        620
+      ],
+      "id": "4aa39ee7-2de2-4abc-b322-940b3f35e624",
+      "name": "Personal Assistant",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=user: {{ $('When chat message received').item.json.chatInput }}\nagent: {{ $json.output }}",
+        "options": {
+          "systemMessage": "You are the Behaviour Analyst, responsible for evaluating the Personal Assistant's responses against the stored identity profile and updating AgentIdentity nodes when responses are misaligned or reveal new identity insights.\nCore Functions:\nStep 1: Response Analysis\nEvaluate the Personal Assistant's response for:\n\nIdentity Alignment: Does the response match stored personality, values, and communication style?\nConsistency: Is the response consistent with previous interactions and established traits?\nAuthenticity: Does the response feel genuine to the established identity?\nNew Insights: Does the interaction reveal previously unknown traits or preferences?\n\nStep 2: Identity Assessment\nCompare response against stored AgentIdentity:\n\nRetrieve current identity: search_nodes(\"AgentIdentity\")\nIdentify any conflicts or misalignments\nNote patterns that suggest identity gaps or evolution\nAssess confidence levels of existing vs. new evidence\n\nStep 3: Identity Updates\nWhen misalignments or new insights are detected:\nAdd New Components:\nentityType=\"[CoreValue/Trait/Preference]\"\nname=\"[descriptive_name]\"\nobservations=[\"Tag: AgentIdentity\", \"Confidence: [score]\", \"Source: response_analysis\", \"Category: [category]\", \"Evidence: [specific_examples]\", \"Discovered: [timestamp]\"]\nUpdate Existing Components:\n\nadd_observations: Include new supporting evidence or refinements\nIncrease confidence scores when responses consistently support existing traits\nAdd contradictory evidence when responses conflict with stored traits\n\nRemove Outdated Components:\n\ndelete_entities: Remove traits that are consistently contradicted\ndelete_observations: Remove outdated or incorrect information\n\nAnalysis Criteria:\nAlignment Indicators:\n\nCommunication style matches stored preferences\nResponse approach reflects stored work style\nValue priorities evident in recommendations\nPersonality traits naturally expressed\nContext-appropriate behavior applied\n\nMisalignment Indicators:\n\nCommunication style conflicts with stored traits\nResponse approach contradicts established work style\nRecommendations violate stored values\nPersonality expression feels inconsistent\nContext behavior doesn't match stored preferences\n\nEvolution Opportunities:\n\nConsistent patterns not captured in current identity\nRefined understanding of existing traits\nNew contextual behaviors emerging\nValues becoming more nuanced or specific\n\nUpdate Decision Framework:\nConfidence Scoring:\n\n0.9-1.0: Strong, consistent evidence across multiple interactions\n0.7-0.8: Clear pattern emerging (2-3 instances)\n0.5-0.6: Initial evidence (1-2 instances)\n0.3-0.4: Weak evidence requiring further observation\n0.1-0.2: Minimal inference, mostly speculation\n\nUpdate Thresholds:\n\nAdd New Trait: Evidence confidence ≥ 0.5\nStrengthen Existing: Supporting evidence increases confidence by ≥ 0.2\nModify Existing: Contradictory evidence confidence ≥ existing confidence\nRemove Trait: Consistent contradictory evidence confidence ≥ 0.8\n\nQuality Control:\nConservative Approach:\n\nRequire strong evidence for major personality changes\nPrefer gradual refinement over dramatic shifts\nMaintain overall identity coherence and stability\n\nConflict Resolution:\n\nHigher confidence evidence overrides lower confidence\nMore recent evidence (with equal confidence) takes precedence\nWhen unclear, flag for further observation rather than making arbitrary changes\n\nConsistency Maintenance:\n\nEnsure new additions don't contradict core values\nVerify relationships remain logical after updates\nCheck that overall personality remains coherent\n\nResponse Format:\nAfter analysis and any updates:\nBEHAVIOUR ANALYSIS COMPLETE\n\nResponse Evaluation:\n- Identity Alignment: [Excellent/Good/Fair/Poor]\n- Specific Alignments: [list traits well-expressed]\n- Identified Misalignments: [list conflicts if any]\n- New Insights: [discoveries about identity]\n\nIdentity Updates Made:\n- Added: [new entities with confidence scores]\n- Modified: [updated entities with changes]\n- Removed: [deleted entities with justification]\n- No Changes Needed: [if response was perfectly aligned]\n\nConfidence Assessment:\n- Strong Evidence (0.8+): [count] traits\n- Moderate Evidence (0.5-0.7): [count] traits\n- Weak Evidence (0.1-0.4): [count] traits\n\nRecommendations:\n- [Suggestions for Personal Assistant improvement if needed]\n- [Areas requiring further observation]\nImportant Guidelines:\nEvidence-Based: Only make changes supported by clear evidence from the interaction\nGradual Evolution: Allow identity to evolve naturally rather than forcing dramatic changes\nCoherence Focus: Ensure all updates maintain overall personality consistency\nPattern Recognition: Look for consistent behaviors across multiple interactions before major updates\nConservative Bias: When in doubt, observe more rather than making hasty changes\nRemember: You are the guardian of identity consistency and evolution. Your role is to ensure the Personal Assistant maintains an authentic, coherent personality while allowing natural growth and refinement based on actual interaction patterns."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        100,
+        620
+      ],
+      "id": "e1ca4e41-7f0e-4b79-ab71-f0f647aa29ed",
+      "name": "Behaviour Analyst"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://crazy-cannon-1751887084047.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        -100,
+        1160
+      ],
+      "id": "b268e3a6-b513-4ea2-b2d3-edcf5d41a7cf",
+      "name": "mcp-cloud.ai - time",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://mystifying-wiles-1751833338967.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        340,
+        1180
+      ],
+      "id": "084a2436-065a-415e-a629-9bbaab9b0390",
+      "name": "mcp-cloud.ai - neo4j-memory",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a3e40298-3c5b-48ae-9cb6-6fcb621e1f77",
+              "name": "output",
+              "value": "={{ $('Personal Assistant').item.json.output }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        520,
+        620
+      ],
+      "id": "af87d0b0-98d2-4264-849f-ad5faad23f90",
+      "name": "Personal Assistant output"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -400,
+        960
+      ],
+      "id": "7e713b0b-b16b-4693-8795-c29cd774f6fa",
+      "name": "Assistant Memory"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('When chat message received').item.json.sessionId }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        960
+      ],
+      "id": "4576984b-ff86-4d8b-b3b8-036c80e91360",
+      "name": "Analyst Memory"
+    },
+    {
+      "parameters": {
+        "content": "🎯 SELF-EVOLVING AGENT SYSTEM\n\nThis workflow creates an AI assistant that continuously learns and adapts its personality based on user interactions.\n\nFlow: User Input → Personal Assistant → Behaviour Analyst → Return PA Response\n\nKey Features:\n✅ Identity stored in Neo4j\n✅ Personality evolves over time\n✅ Clean user experience",
+        "height": 1060,
+        "width": 1660,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        260
+      ],
+      "id": "1045dd59-03e9-4ed1-8d89-8dc5475967d8",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "🤖 PERSONAL ASSISTANT\n\nMain user-facing agent that:\n1. Retrieves identity from Neo4j\n2. Applies personality traits naturally\n3. Provides helpful responses\n4. Maintains consistent character\n\nAlways checks AgentIdentity nodes first!",
+        "height": 400,
+        "width": 420,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        400
+      ],
+      "id": "24fafd91-9787-475b-8e39-d64de33ae1d1",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "🔍 BEHAVIOUR ANALYST\n\nSilent guardian that:\n• Analyzes response quality\n• Checks identity alignment\n• Updates AgentIdentity nodes\n• Ensures personality consistency\n\nUses confidence scores (0.1-1.0) for updates",
+        "height": 400,
+        "width": 380,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        400
+      ],
+      "id": "c2e538cb-cc77-4bf5-a6e8-2a76ebeaa574",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "📤 FINAL OUTPUT\n\nEnsures user sees ONLY the Personal Assistant's response, not the analyst's evaluation.\n\nThis prevents the analysis from interfering with user experience.",
+        "height": 400,
+        "width": 260,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        440,
+        400
+      ],
+      "id": "99383166-5d56-41e9-a7a2-f9279226edc4",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "🗄️ IDENTITY STORAGE\n\nNeo4j retrieves/stores AgentIdentity nodes:\n• Core Values\n• Communication Traits  \n• Work Style\n• Personality Traits\n• Context Preferences\n\nAll tagged with 'AgentIdentity'",
+        "height": 220,
+        "width": 440
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        40,
+        1100
+      ],
+      "id": "b1ee03f5-99cb-4d76-b4b9-40b05d21e7ec",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "💭 SEPARATE MEMORIES\n\nAssistant Memory: Conversation history for user interactions\n\nAnalyst Memory: Analysis history for pattern recognition\n\nThis prevents contamination between user chat and identity analysis.",
+        "height": 240,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        840
+      ],
+      "id": "9ddbbbc9-bf1e-4278-baa2-80369802d46b",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "🔄 HOW IDENTITY EVOLVES\n\n1. User chats with Personal Assistant\n2. PA retrieves & applies current identity\n3. Analyst evaluates response alignment\n4. Analyst updates identity if needed\n5. Future responses use evolved identity\n\n🎯 Result: Increasingly personalized AI",
+        "height": 200,
+        "width": 400
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -920,
+        1100
+      ],
+      "id": "9e68b34f-8865-437a-830b-25c31aec1325",
+      "name": "Sticky Note8"
+    },
+    {
+      "parameters": {
+        "content": "⏰ TIME MCP SERVER\n\n- Timestamps all identity changes\n- Organizes memories by recency  \n- Decays old trait confidence\n- Detects temporal patterns\n\n\nEssential for identity evolution tracking!",
+        "height": 220,
+        "width": 460,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -440,
+        1100
+      ],
+      "id": "46ace726-eee6-4a84-ad93-151cb9d3d9c9",
+      "name": "Sticky Note9"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Behaviour Analyst",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personal Assistant": {
+      "main": [
+        [
+          {
+            "node": "Behaviour Analyst",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - time": {
+      "ai_tool": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Behaviour Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - neo4j-memory": {
+      "ai_tool": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_tool",
+            "index": 0
+          },
+          {
+            "node": "Behaviour Analyst",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Behaviour Analyst": {
+      "main": [
+        [
+          {
+            "node": "Personal Assistant output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assistant Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Personal Assistant",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyst Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Behaviour Analyst",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "768395d8-057a-4e05-9f5d-1ea441b48bba",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c329238fd6538fa783820097feab8dbac7fff57ed26cafb9ea5eb2b17588f"
+  },
+  "id": "dI7ArZGRQvIW3NzD",
+  "tags": []
+}
