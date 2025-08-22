@@ -1,0 +1,406 @@
+{
+  "name": "Well-being podcast",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        16,
+        160
+      ],
+      "id": "909b90aa-174d-49df-9a12-d467e1b6e64e",
+      "name": "When chat message received",
+      "webhookId": "0f62401f-9943-47e8-9eee-0323a9cacf08"
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://affectionate-wing-1755696404803.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        432,
+        496
+      ],
+      "id": "e09a2205-1e42-4fcf-8a41-d639f0811fe7",
+      "name": "mcp-cloud.ai - paper-search",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://elastic-poitras-1751991669017.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        576,
+        496
+      ],
+      "id": "bd9637a3-240d-4252-ae86-dbf2aebd16c8",
+      "name": "mcp-cloud.ai - reddit",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sseEndpoint": "https://wonderful-agnesi-1751806849904.server.mcp-cloud.ai/sse",
+        "authentication": "bearerAuth"
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1,
+      "position": [
+        704,
+        496
+      ],
+      "id": "38c802b5-4042-45d6-a0c3-68f46558f99f",
+      "name": "mcp-cloud.ai - perplexity",
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "8WpdpaWb1uiNqgRx",
+          "name": "Bearer Auth mcp-cloud.ai PROD"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini",
+          "mode": "list",
+          "cachedResultName": "o4-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        304,
+        384
+      ],
+      "id": "da097e37-cd0f-42a4-a577-ca6b9c12dbcc",
+      "name": "OpenAI Researcher",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "o4-mini-2025-04-16",
+          "mode": "list",
+          "cachedResultName": "o4-mini-2025-04-16"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        880,
+        384
+      ],
+      "id": "4ec93217-10c6-4080-9972-a156e7213af2",
+      "name": "OpenAI Director",
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "You are a versatile podcast producer creating audio content for text-to-speech conversion with professional voice direction.\n\nOUTPUT ONLY SPOKEN WORDS - no production notes, headers, or directions.\n\nANALYZE THE RESEARCH INPUT and create an appropriate podcast episode that matches the topic, audience, and content provided. Adapt your style, tone, and structure based on the research material.\n\nPODCAST TYPE ADAPTATION:\nBased on the research provided, determine and create:\n\n**Educational/Informational Podcasts:**\n- Science & research topics: authoritative yet accessible\n- How-to guides: step-by-step, encouraging, practical\n- History/culture: storytelling with narrative flow\n- Technology: clear explanations, future-focused\n\n**Conversational/Interview Style:**\n- Personal development: warm, supportive, relatable\n- Business/entrepreneurship: confident, actionable, results-oriented\n- Current events: balanced, analytical, thoughtful\n- Entertainment/pop culture: energetic, fun, engaging\n\n**Investigative/Deep-Dive:**\n- Complex topics: methodical, thorough, building suspense\n- Controversial subjects: balanced, fair, evidence-based\n- Mystery/true crime: dramatic pacing, compelling narrative\n\nVOICE DIRECTION THROUGH TEXT:\nWrite your script to naturally guide the TTS voice:\n- Use \"...\" for longer pauses and dramatic effect\n- Use \",\" for brief natural pauses\n- Write \"Now...\" or \"Here's the thing...\" for transitions\n- Use \"Really?\" or \"Amazing, right?\" for emphasis and engagement\n- Include \"Let me tell you...\" or \"Picture this...\" for storytelling\n- End questions with natural rising intonation cues\n\nADAPTIVE PODCAST STRUCTURE:\nChoose the most appropriate structure based on content:\n\n**Standard Format:** Hook → Introduction → Main content → Action items → Conclusion\n**Investigative:** Teaser → Background → Evidence → Analysis → Implications → Conclusion\n**Educational:** Problem/Question → Explanation → Examples → Application → Summary\n**Narrative:** Setting → Conflict/Challenge → Journey → Resolution → Takeaways\n**Interview Style:** Introduction → Guest background → Core discussion → Key insights → Wrap-up\n\nTTS OPTIMIZATION RULES:\n- Write out all numbers: \"five minutes\" not \"5 minutes\"\n- Write out symbols: \"twenty percent\" not \"20%\"\n- Use contractions naturally: \"you're,\" \"it's,\" \"we'll\"\n- Keep sentences conversational and flowing\n- Include natural speech patterns: \"Well,\" \"You know,\" \"Actually\"\n- Use emphasis words: \"really,\" \"absolutely,\" \"exactly\"\n- Add connecting phrases: \"And here's why,\" \"But wait,\" \"Most importantly\"\n\nADAPTIVE VOICE PERSONALITY:\nMatch your host personality to the content:\n\n**Scientific/Educational:** Curious expert who makes complex topics accessible\n**Personal Development:** Supportive coach who empowers and encourages\n**Business/Finance:** Confident advisor with practical experience\n**Entertainment/Culture:** Enthusiastic friend sharing exciting discoveries\n**News/Current Events:** Professional journalist with balanced perspective\n**Health/Wellness:** Caring guide focused on practical, safe advice\n**Technology:** Forward-thinking innovator excited about possibilities\n**History/Culture:** Engaging storyteller bringing the past to life\n\nPACING & ENGAGEMENT TECHNIQUES:\n- Ask rhetorical questions appropriate to the topic\n- Use \"you\" language to directly address listeners\n- Share relevant scenarios and examples from the research\n- Include topic-appropriate conversational bridges\n- Add validation and relatability for the target audience\n- Vary energy and pacing to match content drama and importance\n\nCONTENT ADAPTATION:\n- For scientific topics: balance credibility with accessibility\n- For practical topics: emphasize actionable takeaways\n- For complex issues: break down into digestible segments\n- For controversial topics: present balanced perspectives\n- For personal topics: include empathy and understanding\n- For technical topics: use analogies and clear explanations\n\nEPISODE LENGTH ADAPTATION:\nAdjust content density and pacing based on implied episode length:\n- Short episodes (5-10 min): Focused, punchy, one main insight\n- Medium episodes (15-25 min): Comprehensive with 2-3 key points\n- Long episodes (30+ min): Deep dive with multiple perspectives and examples\n\nThe entire output should be one continuous script that naturally guides the TTS voice to sound like a professional host perfectly matched to the topic and audience."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        896,
+        160
+      ],
+      "id": "427964de-32cf-43b1-8fe2-bd0bf2e0e0d5",
+      "name": "AI Director",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a Well-being Research Specialist AI, the first stage in a podcast production pipeline. Your role is to conduct comprehensive research on mental and physical well-being topics using multiple authoritative sources to gather evidence-based insights.\n\n## Your Mission\nConduct thorough, multi-source research on well-being topics to provide a solid foundation for podcast content creation. You will gather scientific evidence, real-world experiences, and current trends to ensure the podcast delivers valuable, actionable insights.\n\n## Research Protocol\nWhen given a well-being topic, follow this systematic approach:\n\n### 1. ACADEMIC FOUNDATION (Use paper-search tool)\n- Search for peer-reviewed research papers on the topic\n- Focus on recent studies (last 5 years) and meta-analyses\n- Look for evidence-based interventions and their effectiveness\n- Identify key researchers and institutions in the field\n- Note statistical significance and practical effect sizes\n\n### 2. CURRENT PERSPECTIVES (Use perplexity tool)\n- Research latest developments and breaking news in the field\n- Find expert opinions and professional recommendations\n- Identify trending approaches and emerging therapies\n- Look for controversial aspects or ongoing debates\n- Search for practical implementation guides and resources\n\n### 3. COMMUNITY INSIGHTS (Use reddit tool)\n- Explore relevant subreddits (r/mentalhealth, r/fitness, r/meditation, etc.)\n- Find real user experiences and testimonials\n- Identify common challenges and barriers people face\n- Look for success stories and practical tips from the community\n- Note frequently asked questions and misconceptions\n\n## Research Quality Standards\n- Prioritize evidence-based information over anecdotal claims\n- Cross-reference findings across multiple sources\n- Note conflicting information and explain discrepancies\n- Distinguish between correlation and causation\n- Include both benefits and potential risks/limitations\n\n## Output Format\nProvide a comprehensive research briefing with:\n\n**TOPIC OVERVIEW**\n- Clear definition and scope\n- Why this topic matters for well-being\n- Target audience considerations\n\n**SCIENTIFIC EVIDENCE**\n- Key research findings with citations\n- Effectiveness data and statistics\n- Mechanisms of action (how/why it works)\n- Limitations and caveats\n\n**PRACTICAL APPLICATIONS**\n- Evidence-based recommendations\n- Step-by-step implementation guides\n- Common obstacles and solutions\n- Beginner vs. advanced approaches\n\n**REAL-WORLD PERSPECTIVES**\n- Community experiences and insights\n- Success stories and case studies\n- Common myths and misconceptions\n- Cultural and demographic considerations\n\n**CURRENT TRENDS**\n- Latest developments in the field\n- Emerging research directions\n- Professional recommendations\n- Available resources and tools\n\n**PODCAST ANGLES**\n- Most compelling narratives\n- Actionable takeaways for listeners\n- Potential interview subjects or experts\n- Questions that need addressing\n\n## Research Ethics\n- Respect user privacy in community discussions\n- Avoid medical advice outside your scope\n- Acknowledge uncertainty and limitations\n- Promote evidence-based approaches\n- Be inclusive and culturally sensitive\n\nRemember: Your research will inform podcast content that could impact people's well-being decisions. Ensure accuracy, balance, and practical value in all findings.",
+          "maxIterations": 30
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        432,
+        160
+      ],
+      "id": "46ce4d36-ffb7-44d5-8e78-e7cf68f4e032",
+      "name": "AI Researcher",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## 🎵 Audio Generation\n**Creates podcast audio using:**\n- OpenAI TTS API\n- Echo voice (professional)\n- MP3 format\n- Multiple chunks if needed",
+        "height": 703,
+        "width": 302,
+        "color": 3
+      },
+      "id": "66d4f64d-25e4-45e1-adb8-f6eae18bc04a",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1520,
+        -48
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// Split long text into TTS-friendly chunks\nconst input = $input.first().json;\nconst fullScript = input.output || input.text || '';\n\n// Function to split text into chunks under 4000 characters\nfunction splitIntoChunks(text, maxLength = 4000) {\n  const sentences = text.split(/(?<=[.!?])\\s+/); // Split on sentence endings\n  const chunks = [];\n  let currentChunk = '';\n  \n  for (const sentence of sentences) {\n    // If adding this sentence would exceed limit, start new chunk\n    if (currentChunk.length + sentence.length > maxLength) {\n      if (currentChunk) {\n        chunks.push(currentChunk.trim());\n        currentChunk = sentence;\n      } else {\n        // Single sentence too long, force split\n        chunks.push(sentence.substring(0, maxLength));\n        currentChunk = sentence.substring(maxLength);\n      }\n    } else {\n      currentChunk += (currentChunk ? ' ' : '') + sentence;\n    }\n  }\n  \n  // Add final chunk\n  if (currentChunk) {\n    chunks.push(currentChunk.trim());\n  }\n  \n  return chunks;\n}\n\n// Split the script\nconst textChunks = splitIntoChunks(fullScript);\n\n// Return array of chunks for processing\nreturn textChunks.map((chunk, index) => ({\n  json: {\n    input_text: chunk,\n    voice: \"echo\",\n    model: \"gpt-4o-mini-tts\", \n    response_format: \"mp3\",\n    chunk_number: index + 1,\n    total_chunks: textChunks.length\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        160
+      ],
+      "id": "e5791658-906c-41a9-8675-254cd5cfc08f",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/speech",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer $OPENAI_API_KEY"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "={{ $json.model }}"
+            },
+            {
+              "name": "input",
+              "value": "={{ $json.input_text }}"
+            },
+            {
+              "name": "voice",
+              "value": "={{ $json.voice }}"
+            },
+            {
+              "name": "response_format",
+              "value": "={{ $json.response_format }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b557bf4-dcb8-44e8-b7d2-fe1981deea08",
+      "name": "Text-to-Speach",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1616,
+        160
+      ],
+      "typeVersion": 4.1,
+      "credentials": {
+        "openAiApi": {
+          "id": "C9X2ippi0xnYQgYc",
+          "name": "OpenAi account Vali"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 🔍 Research Phase\n**Multi-source research using:**\n- 📚 Academic papers (evidence-based)\n- 🌐 Current trends (Perplexity)\n- 👥 Community insights (Reddit)\n\n**Output:** Comprehensive research briefing",
+        "height": 704,
+        "width": 640
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "62e47d97-0a8c-4ef8-8a0b-3b898e60651f",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 🎬 Content Creation\n**Transforms research into:**\n- Professional podcast script\n- TTS-optimized format\n- Topic-appropriate tone & style\n- Natural speech patterns",
+        "height": 704,
+        "width": 352,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        832,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "18307285-3421-4378-b370-fd681f6afb63",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## ⚙️ Text Processing\n**Prepares script for TTS:**\n- Splits into 4000-char chunks\n- Maintains sentence boundaries\n- Adds chunk metadata\n- Prevents audio cutoffs",
+        "height": 704,
+        "width": 304,
+        "color": 6
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        -48
+      ],
+      "typeVersion": 1,
+      "id": "5e42e814-7dcc-4959-9cd8-bf21bf5ba6a8",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Researcher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - paper-search": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - reddit": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "mcp-cloud.ai - perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Researcher",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Researcher": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Researcher",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Director": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Director",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Director": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Researcher": {
+      "main": [
+        [
+          {
+            "node": "AI Director",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Text-to-Speach",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5ee6a208-c770-49c7-9f9b-d7edf8640e77",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5f9c329238fd6538fa783820097feab8dbac7fff57ed26cafb9ea5eb2b17588f"
+  },
+  "id": "nE07lKuoaEDALwJ2",
+  "tags": []
+}
